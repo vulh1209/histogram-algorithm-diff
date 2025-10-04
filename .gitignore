@@ -1,2 +1,7 @@
-/target
-/bench_data
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+*.tsbuildinfo
+
