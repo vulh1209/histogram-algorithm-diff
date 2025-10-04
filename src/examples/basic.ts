@@ -2,7 +2,7 @@
  * Basic usage example for imara-diff
  */
 
-import { Diff, Algorithm, InternedInput, StringLines } from '../src/index.js';
+import { Diff, Algorithm, InternedInput, StringLines } from '../index.js';
 
 // Example 1: Simple text diff
 console.log('=== Example 1: Simple Text Diff ===\n');
@@ -28,7 +28,7 @@ const diff1 = Diff.compute(Algorithm.Histogram, input1);
 console.log(`Total changes: +${diff1.countAdditions()}/-${diff1.countRemovals()}\n`);
 
 for (const hunk of diff1.hunks()) {
-  console.log(`Hunk:`);
+  console.log(`Hunk:`, hunk);
   console.log(`  Before lines: ${hunk.before.start}-${hunk.before.end}`);
   console.log(`  After lines: ${hunk.after.start}-${hunk.after.end}`);
   

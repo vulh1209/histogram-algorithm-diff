@@ -13,18 +13,6 @@ import { Token } from '../core/types.js';
 import { commonPrefix, commonPostfix, markRange } from '../core/util.js';
 
 /**
- * A simple edit in the diff.
- */
-interface Edit {
-  /** Position in before sequence */
-  x: number;
-  /** Position in after sequence */
-  y: number;
-  /** Previous edit in the path */
-  prev: Edit | null;
-}
-
-/**
  * Simplified Myers diff algorithm.
  * Computes a diff without optimizations - suitable for fallback cases.
  * 
@@ -106,12 +94,12 @@ export function simpleMyers(
       // Determine if we came from k-1 (move right) or k+1 (move down)
       let x: number;
       
-      if (k === -D || (k !== D && V[offset + k - 1] < V[offset + k + 1])) {
+      if (k === -D || (k !== D && V[offset + k - 1]! < V[offset + k + 1]!)) {
         // Move down from k+1
-        x = V[offset + k + 1];
+        x = V[offset + k + 1]!;
       } else {
         // Move right from k-1
-        x = V[offset + k - 1] + 1;
+        x = V[offset + k - 1]! + 1;
       }
       
       let y = x - k;
@@ -161,8 +149,8 @@ function backtrack(
   N: number,
   M: number,
   offset: number,
-  before: readonly Token[],
-  after: readonly Token[],
+  _before: readonly Token[],
+  _after: readonly Token[],
   beforeStart: number,
   afterStart: number,
   removed: boolean[],
@@ -180,13 +168,13 @@ function backtrack(
     // Determine which direction we came from
     let prevK: number;
     
-    if (k === -d || (k !== d && V[offset + k - 1] < V[offset + k + 1])) {
+    if (k === -d || (k !== d && V[offset + k - 1]! < V[offset + k + 1]!)) {
       prevK = k + 1;
     } else {
       prevK = k - 1;
     }
     
-    const prevX = V[offset + prevK];
+    const prevX = V[offset + prevK]!;
     const prevY = prevX - prevK;
     
     // Walk backward along diagonal

@@ -184,8 +184,9 @@ export class ListPool {
       return offset;
     } else {
       // Reuse from free list
-      this.freeList[sclass] = toU32(this.data[freeHead]!);
-      return freeHead;
+      const nextFree = this.data[freeHead!];
+      this.freeList[sclass] = toU32(nextFree!);
+      return freeHead!;
     }
   }
   

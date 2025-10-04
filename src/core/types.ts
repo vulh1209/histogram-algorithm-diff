@@ -64,7 +64,7 @@ export function rangeLen(r: Range): number {
  * Debug mode flag - enables runtime assertions.
  * Set to true in development, false in production.
  */
-export const DEBUG = process.env.NODE_ENV !== 'production';
+export const DEBUG = process.env?.['NODE_ENV'] !== 'production';
 
 /**
  * Assert a condition in debug mode.
