@@ -16,9 +16,9 @@ export type Token = number & { readonly __brand: 'Token' };
  * @internal
  */
 export function token(n: number): Token {
-  // Validate token is in valid range (u32 in Rust: 0 to 2^31-2)
-  if (n < 0 || n >= 0x7FFF_FFFF) {
-    throw new RangeError(`Token ${n} out of valid range [0, ${0x7FFF_FFFF})`);
+  // Validate token is in valid range (u32 in Rust: 0 to 2^31-1 inclusive)
+  if (n < 0 || n > 0x7FFF_FFFF) {
+    throw new RangeError(`Token ${n} out of valid range [0, ${0x7FFF_FFFF}]`);
   }
   return n as Token;
 }

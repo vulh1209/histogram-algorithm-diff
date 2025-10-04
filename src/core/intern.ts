@@ -50,6 +50,9 @@ export class Interner<T> {
   private tokens: T[] = [];
   private table = new Map<string, Token>();
   
+  /** Generation counter for invalidation tracking */
+  generation: number = 0;
+  
   /**
    * Create a new interner with optional initial capacity.
    */
@@ -77,6 +80,7 @@ export class Interner<T> {
   clear(): void {
     this.table.clear();
     this.tokens.length = 0;
+    this.generation++;
   }
   
   /**

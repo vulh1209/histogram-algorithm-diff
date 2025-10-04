@@ -134,14 +134,14 @@ export class ListPool {
   data: number[] = [];
   
   /** Free list heads for each size class */
-  private free: Uint32Array;
+  private freeList: Uint32Array;
   
   /** Current generation (for validation) */
   generation: number = 1;
   
   constructor(capacity?: number) {
-    this.free = new Uint32Array(NUM_SIZE_CLASS);
-    this.free.fill(0xFFFFFFFF); // All empty
+    this.freeList = new Uint32Array(NUM_SIZE_CLASS);
+    this.freeList.fill(0xFFFFFFFF); // All empty
     
     if (capacity) {
       this.data = new Array(capacity);
@@ -154,12 +154,13 @@ export class ListPool {
    */
   clear(): void {
     this.data.length = 0;
-    this.free.fill(0xFFFFFFFF);
-    this.generation++;
+    this.freeList.fill(0xFFFFFFFF);
     
-    // Wrap around if needed (avoid overflow)
-    if (this.generation >= 0xFFFFFFFF) {
+    // Increment generation and wrap if needed
+    if (this.generation === 0xFFFFFFFF) {
       this.generation = 1;
+    } else {
+      this.generation++;
     }
   }
   
@@ -168,7 +169,7 @@ export class ListPool {
    * Returns the starting index.
    */
   alloc(sclass: SizeClass): number {
-    const freeHead = this.free[sclass];
+    const freeHead = this.freeList[sclass];
     
     if (freeHead === 0xFFFFFFFF) {
       // No free blocks, allocate new
@@ -183,7 +184,7 @@ export class ListPool {
       return offset;
     } else {
       // Reuse from free list
-      this.free[sclass] = toU32(this.data[freeHead]!);
+      this.freeList[sclass] = toU32(this.data[freeHead]!);
       return freeHead;
     }
   }
@@ -193,8 +194,8 @@ export class ListPool {
    */
   free(block: number, sclass: SizeClass): void {
     // Add to free list (single-linked)
-    this.data[block] = this.free[sclass]!;
-    this.free[sclass] = toU32(block);
+    this.data[block] = this.freeList[sclass]!;
+    this.freeList[sclass] = toU32(block);
   }
   
   /**

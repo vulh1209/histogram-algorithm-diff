@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { fc } from 'fast-check';
+import * as fc from 'fast-check';
 import { Diff, Algorithm, HunkUtils } from '../../src/api/diff.js';
 import { InternedInput } from '../../src/core/intern.js';
 import { StringLines } from '../../src/core/sources.js';

@@ -52,7 +52,13 @@ export function simpleMyers(
   
   // Strip common prefix and postfix for efficiency
   const prefix = commonPrefix(before, after);
-  const postfix = commonPostfix(before, after);
+  const minLen = Math.min(before.length, after.length);
+  
+  // Don't calculate postfix if prefix already covers everything
+  let postfix = 0;
+  if (prefix < minLen) {
+    postfix = commonPostfix(before.slice(prefix), after.slice(prefix));
+  }
   
   const beforeStart = prefix;
   const beforeEnd = before.length - postfix;

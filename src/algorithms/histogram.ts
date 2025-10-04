@@ -87,18 +87,28 @@ class Histogram {
     before: readonly Token[],
     after: readonly Token[],
     removed: boolean[],
-    added: boolean[]
+    added: boolean[],
+    beforeOffset: number = 0,
+    afterOffset: number = 0
   ): void {
     // Handle base cases
     if (before.length === 0) {
-      markRange(added, 0, after.length, true);
+      markRange(added, afterOffset, afterOffset + after.length, true);
       return;
     }
     
     if (after.length === 0) {
-      markRange(removed, 0, before.length, true);
+      markRange(removed, beforeOffset, beforeOffset + before.length, true);
       return;
     }
+    
+    // Optimization: if arrays are identical (same reference), no changes
+    if (before === after) {
+      return;
+    }
+    
+    // Clear histogram state from previous recursive calls
+    this.clear();
     
     // Populate histogram with 'before' positions
     this.populate(before);
@@ -109,14 +119,27 @@ class Histogram {
     if (!lcs) {
       // No LCS found (too many repetitions)
       // Fall back to Myers algorithm
-      simpleMyers(before, after, removed, added);
+      const beforeSlice = before.slice();
+      const afterSlice = after.slice();
+      const removedSlice = new Array(before.length).fill(false);
+      const addedSlice = new Array(after.length).fill(false);
+      
+      simpleMyers(beforeSlice, afterSlice, removedSlice, addedSlice);
+      
+      // Copy results back with offset
+      for (let i = 0; i < removedSlice.length; i++) {
+        if (removedSlice[i]) removed[beforeOffset + i] = true;
+      }
+      for (let i = 0; i < addedSlice.length; i++) {
+        if (addedSlice[i]) added[afterOffset + i] = true;
+      }
       return;
     }
     
     if (lcs.len === 0) {
       // No common elements at all
-      markRange(removed, 0, before.length, true);
-      markRange(added, 0, after.length, true);
+      markRange(removed, beforeOffset, beforeOffset + before.length, true);
+      markRange(added, afterOffset, afterOffset + after.length, true);
       return;
     }
     
@@ -124,8 +147,10 @@ class Histogram {
     this.run(
       before.slice(0, lcs.beforeStart),
       after.slice(0, lcs.afterStart),
-      removed.slice(0, lcs.beforeStart),
-      added.slice(0, lcs.afterStart)
+      removed,
+      added,
+      beforeOffset,
+      afterOffset
     );
     
     // Continue with the parts after the LCS (tail recursion -> loop)
@@ -136,8 +161,10 @@ class Histogram {
     this.run(
       before.slice(beforeEnd),
       after.slice(afterEnd),
-      removed.slice(beforeEnd),
-      added.slice(afterEnd)
+      removed,
+      added,
+      beforeOffset + beforeEnd,
+      afterOffset + afterEnd
     );
   }
   
@@ -175,7 +202,8 @@ class Histogram {
     this.clear();
     
     // Check if we succeeded
-    if (!foundCs || minOccurrences > MAX_CHAIN_LEN) {
+    // Use >= because exactly MAX_CHAIN_LEN occurrences also needs fallback
+    if (!foundCs || minOccurrences >= MAX_CHAIN_LEN) {
       return null; // Fallback needed
     }
     

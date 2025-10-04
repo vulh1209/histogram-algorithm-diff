@@ -121,9 +121,9 @@ describe('Edge Cases - Potential Bugs', () => {
       expect(input.interner.numTokens()).toBeGreaterThan(0);
     });
     
-    it('should not reuse invalidated ListHandles', () => {
+    it('should not reuse invalidated ListHandles', async () => {
       // This tests the ListPool generation validation
-      const { ListPool, ListHandle } = require('../../src/algorithms/list-pool.js');
+      const { ListPool, ListHandle } = await import('../../src/algorithms/list-pool.js');
       
       const pool = new ListPool();
       const handle = new ListHandle();
