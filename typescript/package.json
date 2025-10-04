@@ -1,0 +1,43 @@
+{
+  "name": "imara-diff",
+  "version": "0.1.0",
+  "description": "A high performance diff library for TypeScript (ported from Rust)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "bench": "vitest bench",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "diff",
+    "difference",
+    "myers",
+    "histogram",
+    "compare",
+    "changes"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4",
+    "fast-check": "^3.15.0",
+    "@vitest/coverage-v8": "^1.0.4",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0"
+  }
+}
+
